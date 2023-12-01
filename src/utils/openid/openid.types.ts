@@ -1,3 +1,5 @@
+import { JWK } from 'jose';
+
 export enum WELL_KNOWN {
   OPENID_CREDENTIAL_ISSUER = '.well-known/openid-credential-issuer'
 }
@@ -31,4 +33,38 @@ export type IssuerMetadata = {
 
 export enum SIGNING_ALG {
   ES256 = 'ES256'
+}
+
+export enum JWT_TYPE  {
+  JWT = 'JWT',
+  KEY_BINDING_JWT = 'kb+jwt',
+  VC_SD_JWT = 'vc+sd-jwt',
+};
+
+export enum SIOP {
+  V2 = 'https://self-issued.me/v2/openid-vc'
+}
+
+export type PresentationRequest = {
+  claims?: {
+    vp_token?: {
+      presentation_definition?: {
+        id: string;
+      }
+    }
+  };
+  exp: number;
+  iss: string;
+  nonce: number;
+  redirect_uri: string;
+  state: string;
+}
+
+export type IdTokenPayload = {    
+  '_vp_token': object;
+  aud: string;
+  exp: number;
+  nonce: number;
+  sub: string;
+  'sub_jwk': JWK;
 }

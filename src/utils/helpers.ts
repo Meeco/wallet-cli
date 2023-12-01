@@ -1,3 +1,5 @@
+import { JWT_TYPE } from './openid/openid.types.js';
+
 export function generateRandomCode(length: number) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let code = '';
@@ -24,5 +26,5 @@ export async function printFetchError(res: Response, message = 'HTTP request fai
 }
 
 export function isVcSdJwt({ format }: { format: string }) {
-  return format === 'vc+sd-jwt';
+  return format === JWT_TYPE.VC_SD_JWT;
 }

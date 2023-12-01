@@ -23,16 +23,16 @@ meeco-wallet-cli
 <!-- usage -->
 ```sh-session
 $ npm install
-$ chmod +x ./bin/run.js
-$ ./bin/run.js COMMAND
+$ chmod +x ./bin/dev.js
+$ ./bin/dev.js COMMAND
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`./bin/run.js claim`](#meeco-wallet-cli-claim)
-* [`./bin/run.js present`](#meeco-wallet-cli-present)
-* [`./bin/run.js create-credential-offer`](#meeco-wallet-cli-create-credential-offer)
-* [`./bin/run.js create-presentation-request`](#meeco-wallet-cli-create-presentation-request)
+* [`./bin/dev.js claim`](#meeco-wallet-cli-claim)
+* [`./bin/dev.js present`](#meeco-wallet-cli-present)
+* [`./bin/dev.js create-credential-offer`](#meeco-wallet-cli-create-credential-offer)
+* [`./bin/dev.js create-presentation-request`](#meeco-wallet-cli-create-presentation-request)
 
 ## `meeco-wallet-cli claim`
 
@@ -40,7 +40,7 @@ Claim Credential Offer
 
 ```
 USAGE
-  $ ./bin/run.js claim
+  $ ./bin/dev.js claim
 
 DESCRIPTION
   Issue a credential by claiming the provided Credential Offer.
@@ -59,7 +59,7 @@ Currently only support `vc+sd-jwt` a presentation.
 
 ```
 USAGE
-  $ ./bin/run.js present
+  $ ./bin/dev.js present
 
 DESCRIPTION
   Generate a Presentation Request based on the Provided Presentation Request URI and selected Credential.
@@ -84,7 +84,7 @@ Create Credential Offer
 
 ```
 USAGE
-  $ ./bin/run.js create-credential-offer [URL]
+  $ ./bin/dev.js create-credential-offer [URL]
 
 ARGUMENTS
   URL  Running instance of meeco-organisation-wallet. Default: `http://127.0.0.1:3000`
@@ -108,7 +108,7 @@ Create Presentation Request
 
 ```
 USAGE
-  $ ./bin/run.js create-credential-offer [DEFINITION_ID] [URL]
+  $ ./bin/dev.js create-credential-offer [DEFINITION_ID] [URL]
 
 ARGUMENTS
   DEFINITION_ID  SVX presentation id. 

@@ -41,8 +41,6 @@
     "/dist",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/meeco/meeco-wallet-cli",
-  "license": "MIT",
   "main": "",
   "name": "meeco-wallet-cli",
   "oclif": {
@@ -70,8 +68,7 @@
     "prepare": "npm run build",
     "version": "oclif readme && git add README.md"
   },
-  "version": "0.0.0",
-  "bugs": "https://github.com/meeco/meeco-wallet-cli/issues",
+  "version": "1.0.0",
   "keywords": [
     "oclif"
   ],

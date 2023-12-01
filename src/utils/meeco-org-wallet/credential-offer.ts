@@ -41,8 +41,12 @@ export async function createCredentialOffer({
     credentialDataSupplierInput: {
       claims,
     },
-    credentials: types,
-    format,
+    credentials: [
+      {
+        format,
+        types,
+      },
+    ],
     grants,
   }
 

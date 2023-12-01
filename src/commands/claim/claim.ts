@@ -4,7 +4,7 @@ import { prompt } from '@oclif/core/lib/cli-ux/prompt.js';
 import { readFile, writeFile } from 'node:fs/promises';
 
 import { listFilesAsInquirerChoice } from '../../utils/file.js';
-import { claimCredentialOffer, parseCredentialOffer, prependTS } from '../../utils/index.js';
+import { claimCredentialOffer, parseCredentialOffer, prependTS, printFetchError } from '../../utils/index.js';
 
 export default class Claim extends Command {
   static args = {};
@@ -25,9 +25,11 @@ export default class Claim extends Command {
 
     const credentialOfferURI = parseCredentialOffer(credentialOffer);
 
-    const verifiableCredential = await claimCredentialOffer(credentialOfferURI);
+    const verifiableCredential = await claimCredentialOffer(credentialOfferURI).catch((error) => {
+      printFetchError(error);
+    });
 
-    const vcFilename = await prompt('Save offer as', { default: prependTS('credential.jwt') });
+    const vcFilename = await prompt('Save Credential as', { default: prependTS('credential.jwt') });
 
     await writeFile(`./.data/${vcFilename}`, verifiableCredential);
   }

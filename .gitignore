@@ -13,4 +13,4 @@ oclif.lock
 oclif.manifest.json
 
 .data/*
-!.data/.keep
+!.data/*.example

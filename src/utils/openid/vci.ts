@@ -2,7 +2,6 @@ import { prompt } from '@oclif/core/lib/cli-ux/prompt.js';
 import { randomUUID } from 'node:crypto';
 import { TokenSet } from 'openid-client';
 
-import { CredentialMetadata } from '../../commands/create-credential-offer/create-credential-offer.types.js';
 import { isVcSdJwt, printFetchError } from '../helpers.js';
 import { GRANT_TYPES, IssuerMetadata, WELL_KNOWN } from './openid.types.js';
 import { getTokenFromAuthorizationToken } from './vci.auth-code.js';
@@ -14,13 +13,16 @@ export async function getIssuerMetadata(issuer: string): Promise<IssuerMetadata>
 
 export function parseCredentialOffer(input: string) {
   const matches = [...input.matchAll(/credential_offer_uri=(.*)$/g)][0];
-  return matches[1];
+  return decodeURIComponent(matches[1]);
 }
 
 export async function claimCredentialOffer(credentialOfferURL: string) {
-  const { credential_issuer: issuer, credentials, grants } = await fetch(credentialOfferURL).then((res) => res.json());
+  const result = await fetch(credentialOfferURL).then((res) => res.json());
+
+  const { credential_issuer: issuer, credentials, grants } = result;
 
   const metadata = credentials[0];
+
   const issuerMetadata = await getIssuerMetadata(issuer);
 
   const preAuthGrant = grants[GRANT_TYPES.PREAUTHORIZED_CODE];
@@ -80,8 +82,12 @@ async function exchangePreauthCodeWithToken(endpoint: string, code: string, user
     .then((res) => res.json());
 }
 
+type CredentialOfferMetadata = {
+  format: string;
+  types: string[];
+}
 
-export async function issueVC(issuer: string, endpoint: string, token: TokenSet, metadata: CredentialMetadata) {
+export async function issueVC(issuer: string, endpoint: string, token: TokenSet, metadata: CredentialOfferMetadata) {
   /**
    * Get VC
    */
@@ -96,7 +102,7 @@ export async function issueVC(issuer: string, endpoint: string, token: TokenSet,
     },
   };
 
-  return fetch(endpoint, {
+  const result = await fetch(endpoint, {
     body: JSON.stringify(vcPayload),
     headers: {
       Authorization: `Bearer ${token.access_token}`,
@@ -104,4 +110,6 @@ export async function issueVC(issuer: string, endpoint: string, token: TokenSet,
     },
     method: 'post',
   }).then((res) => res.json());
+
+  return result.credential;
 }

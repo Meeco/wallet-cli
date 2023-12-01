@@ -88,6 +88,6 @@ export default class CreateCredentialOffer extends Command {
 
     const offerFilename = await prompt('Save offer as', { default: prependTS('credential-offer.txt') });
 
-    await writeFile(`./.data/${offerFilename}`, response.uri);
+    await writeFile(`./.data/${offerFilename}`, decodeURIComponent(response.uri));
   }
 }

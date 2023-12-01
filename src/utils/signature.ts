@@ -13,7 +13,8 @@ function encodePublicKey(publicKey: Buffer, encoding: Uint8Array | multicodec.Co
 export function createDidKey() {
   const privateKey = ed25519.utils.randomPrivateKey();
   const publicKey = ed25519.getPublicKey(privateKey);
-  const secretKey = [...u8a, privateKey, publicKey];
+  // eslint-disable-next-line unicorn/prefer-spread
+  const secretKey = u8a.concat([privateKey, publicKey]);
   const identifier = `did:key:${encodePublicKey(publicKey as Buffer, 'ed25519-pub')}`;
 
   return {
@@ -35,10 +36,18 @@ const signEdDSA = async (secretKey: Buffer, data: Buffer) => {
 
 const getSigner = (secretKey: Buffer) => async (data: Buffer) => signEdDSA(secretKey, data);
 
-export const signJWT = (args) => {
+type signJWTArgs = {
+  [props: string]: unknown;
+  header: object;
+  options?: object;
+  payload: object;
+  secretKey: Uint8Array;
+}
+
+export const signJWT = (args: signJWTArgs) => {
   const options = {
     ...args.options,
-    signer: getSigner(args.secretKey),
+    signer: getSigner(args.secretKey as Buffer),
   };
 
   return createJWT(args.payload, options, args.header);

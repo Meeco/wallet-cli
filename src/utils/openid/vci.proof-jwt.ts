@@ -1,4 +1,4 @@
-import { importJWK } from 'jose';
+import { SignJWT, importJWK } from 'jose';
 import { readFile } from 'node:fs/promises';
 import { TokenSet } from 'openid-client';
 
@@ -32,7 +32,7 @@ export async function getSdJwtVcJsonProof(issuer: string, token: TokenSet) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { d: _d, ...publicKey } = holder.jwk; 
 
-  const jwt: string = await signJWT({
+  const jwt: string = await new SignJWT({
     aud: issuer,
     exp: Math.floor(Date.now() / 1000) + 60 * 2,
     iss: holder.uri,

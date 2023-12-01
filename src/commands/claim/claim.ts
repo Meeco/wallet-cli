@@ -21,7 +21,7 @@ export default class Claim extends Command {
       message: 'Select Credential Offer file'
     });
   
-    const credentialOffer = await readFile(offerFile).then((data) => JSON.parse(data.toString()));
+    const credentialOffer = await readFile(offerFile).then((data) => data.toString());
 
     const credentialOfferURI = parseCredentialOffer(credentialOffer);
 

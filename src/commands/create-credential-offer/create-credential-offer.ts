@@ -80,10 +80,9 @@ export default class CreateCredentialOffer extends Command {
       pinRequired,
       types: selectedCredential.types,
       url: args.url,
-    })
-    .then((res) => res.json())
-    .catch((error) => {
-      console.log(error);
+    }).catch((error) => {
+      this.log('Failed to Create Credential offer:', error.message);
+      this.exit(1);
     })
 
     const offerFilename = await prompt('Save offer as', { default: prependTS('credential-offer.txt') });

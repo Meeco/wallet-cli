@@ -60,4 +60,11 @@ export async function createCredentialOffer({
     },
     method: 'POST',
   })
+  .then((res) => {
+    if (res.status !== 200) {
+      throw new Error(res.statusText);
+    }
+
+    return res.json()
+  });
 }

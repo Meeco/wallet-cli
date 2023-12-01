@@ -1,0 +1,1 @@
+export const CREDENTIAL_OFFER_ENDPOINT = '/credential_offers';

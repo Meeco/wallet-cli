@@ -1,0 +1,10 @@
+{
+  "uri": "http://meeco-wallet-cli.uri",
+  "jwk": {
+    "kty": "EC",
+    "d": "_c70bQZ4FNvcsgUm5o-wMurd7RrcaUFLKgO7BS-Dsp0",
+    "crv": "P-256",
+    "x": "jjPjsHOi3eJ_Ry0paKekj3HxexRb43UYDV8fI63DXF0",
+    "y": "'9_UY46J7yU7q8jdM7px0H65ZvaaMoo5gbt35EaQi1og"
+  }
+}

@@ -2,13 +2,14 @@ import { generateRandomCode } from '../helpers.js';
 import { GRANT_TYPES } from '../openid/openid.types.js';
 import { CREDENTIAL_OFFER_ENDPOINT } from './constants.js';
 
-type createCredentialOfferArgs = {
+export type createCredentialOfferArgs = {
   claims: unknown;
   format: string;
   grantType: string;
   pinRequired: boolean;
   types: string[];
   url: string;
+  userPin?: string;
 }
 
 export async function createCredentialOffer({
@@ -18,6 +19,7 @@ export async function createCredentialOffer({
   pinRequired,
   types,
   url,
+  userPin,
 }: createCredentialOfferArgs) {
   const randomCode = generateRandomCode(22);
 
@@ -26,6 +28,7 @@ export async function createCredentialOffer({
     grants = {
       'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
         'pre-authorized_code': randomCode,
+        'user_pin': userPin,
         'user_pin_required': pinRequired,
       },
     };

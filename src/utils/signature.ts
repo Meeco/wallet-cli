@@ -34,12 +34,14 @@ const signEdDSA = async (secretKey: Buffer, data: Buffer) => {
   return signature;
 };
 
-const getSigner = (secretKey: Buffer) => async (data: Buffer) => signEdDSA(secretKey, data);
+const getSigner = (secretKey: Buffer) => async (data: Uint8Array | string) => signEdDSA(secretKey, data as Buffer);
 
 type signJWTArgs = {
   [props: string]: unknown;
   header: object;
-  options?: object;
+  options: {
+    issuer: string;
+  };
   payload: object;
   secretKey: Uint8Array;
 }

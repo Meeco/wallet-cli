@@ -42,12 +42,33 @@ export async function getTokenFromAuthorizationToken({
 
   let params: { [props: string]: unknown } = {};
 
+  let returnToken: (value: unknown) => void;
+  let rejectToken: (value: unknown) => void;
+  
+  const promise = new Promise((resolve, reject) => {
+    returnToken = resolve;
+    rejectToken = reject;
+  });
+
+  const completeFlow = async () => {
+    const token = await client.oauthCallback(listener, params, { 
+      'code_verifier': codeVerifier 
+    }).catch((error) => rejectToken(error));
+
+    server.close();
+
+    returnToken(token);
+  }
+
   const server = http
     .createServer((req, res) => {
       if (req.url?.startsWith('/?')) {
         params = client.callbackParams(req);
         params.state = params.issuer_state;
-        res.end('You can close this page now.');
+
+        completeFlow();
+
+        res.end('You can close this page now.');        
       } else {
         res.end('Unsupported');
       }
@@ -56,14 +77,5 @@ export async function getTokenFromAuthorizationToken({
 
   await open(authorizationUrl);
 
-  while (params.state === undefined) {
-    // eslint-disable-next-line no-promise-executor-return, no-await-in-loop
-    await new Promise((resolve) => setTimeout(resolve, 500));
-  }
-
-  const token = await client.oauthCallback(listener, params, { 'code_verifier': codeVerifier });
-
-  server.close();
-
-  return token;
+  return promise;
 }

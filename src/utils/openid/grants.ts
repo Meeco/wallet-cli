@@ -1,4 +1,4 @@
-import { GRANT_TYPES } from './openid.types.js';
+import { GRANT_TYPES } from '../../types/openid.types.js';
 
 function parseGrantTypes(grantType: string) {
   if (grantType === GRANT_TYPES.AUTHORIZATION_CODE) {

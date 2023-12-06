@@ -1,12 +1,16 @@
 import { select } from '@inquirer/prompts';
-import { Command } from '@oclif/core';
+import { Command, ux } from '@oclif/core';
 import { decodeJwt } from 'jose';
 import { readFile, writeFile } from 'node:fs/promises';
 
-import { listFilesAsInquirerChoice } from '../../utils/file.js';
-import { prependTS } from '../../utils/index.js';
-import { PresentationRequest } from '../../utils/openid/openid.types.js';
-import { generatePresentationRequestSubmission, parsePresentationRequestURI } from '../../utils/openid/vp.js';
+import type { PresentationRequest } from '../../types/index.js';
+
+import { 
+  generatePresentationRequestSubmission, 
+  listFilesAsInquirerChoice, 
+  parsePresentationRequestURI, 
+  prependTS,
+} from '../../utils/index.js';
 
 export default class Present extends Command {
   static args = {};
@@ -33,10 +37,18 @@ export default class Present extends Command {
   
     const vc = await readFile(credentialFile, { encoding: 'utf8' }).then((data) => data.toString());
 
+    ux.action.start('fetching presentation request JWT');
+
     const presentationRequestJWT = await fetch(presentationRequestURI).then((res) => res.text());
     const requestPayload = <PresentationRequest>decodeJwt(presentationRequestJWT);
+
+    ux.action.stop();
     
+    ux.action.start('generate presentation request submission');
+
     const requestSubmission = await generatePresentationRequestSubmission(requestPayload, vc);
+
+    ux.action.stop();
 
     const submissionFile = prependTS('submission.json');
     this.log('Saving Presentation Request submission to', submissionFile);

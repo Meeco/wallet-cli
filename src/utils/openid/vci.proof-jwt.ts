@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { TokenSet } from 'openid-client';
 
 import { createDidKey, signJWT } from '../signature.js';
-import { SIGNING_ALG } from './openid.types.js';
+import { SIGNING_ALG } from '../../types/openid.types.js';
 
 export async function getJwtVcJsonProof(issuer: string, token: TokenSet) {
   const didKey = createDidKey();

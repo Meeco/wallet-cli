@@ -1,14 +1,19 @@
+import { ux } from '@oclif/core';
 import { prompt } from '@oclif/core/lib/cli-ux/prompt.js';
 import { randomUUID } from 'node:crypto';
 import { TokenSet } from 'openid-client';
 
 import { isVcSdJwt, printFetchError } from '../helpers.js';
-import { GRANT_TYPES, IssuerMetadata, WELL_KNOWN } from './openid.types.js';
-import { getTokenFromAuthorizationToken } from './vci.auth-code.js';
+import { GRANT_TYPES, IssuerMetadata, WELL_KNOWN } from '../../types/openid.types.js';
+import { getTokenFromAuthorizationCode } from './vci.auth-code.js';
 import { getJwtVcJsonProof, getSdJwtVcJsonProof } from './vci.proof-jwt.js';
 
 export async function getIssuerMetadata(issuer: string): Promise<IssuerMetadata> {
-  return fetch(`${issuer}/${WELL_KNOWN.OPENID_CREDENTIAL_ISSUER}`).then((res) => res.json());
+  return fetch(`${issuer}/${WELL_KNOWN.OPENID_CREDENTIAL_ISSUER}`)
+    .then((res) => res.json())
+    .catch((error) => {
+      printFetchError(error);
+    });
 }
 
 export function parseCredentialOffer(input: string) {
@@ -17,13 +22,24 @@ export function parseCredentialOffer(input: string) {
 }
 
 export async function claimCredentialOffer(credentialOfferURL: string) {
-  const result = await fetch(credentialOfferURL).then((res) => res.json());
+  ux.action.start('fetch credential offer');
+
+  const result = await fetch(credentialOfferURL)
+    .then((res) => res.json())
+    .catch((error) => {
+      printFetchError(error);
+    });
+
+  ux.action.stop();
 
   const { credential_issuer: issuer, credentials, grants } = result;
-
   const metadata = credentials[0];
 
+  ux.action.start('get issuer metadata');
+
   const issuerMetadata = await getIssuerMetadata(issuer);
+
+  ux.action.stop();
 
   const preAuthGrant = grants[GRANT_TYPES.PREAUTHORIZED_CODE];
   const authorizationGrant = grants[GRANT_TYPES.AUTHORIZATION_CODE];
@@ -35,17 +51,25 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
       ? await prompt(`Credential offer is protected with use PIN. Please enter one and press enter: `)
       : undefined;
 
+    ux.action.start('get token using pre-authorized_code');
+
     token = await exchangePreauthCodeWithToken(
       issuerMetadata.token_endpoint,
       preAuthGrant['pre-authorized_code'],
       userPin,
     );
+
+    ux.action.stop();
   } else if (authorizationGrant) {
-    token = await getTokenFromAuthorizationToken({
+    ux.action.start('get token from Authorization Code');
+
+    token = await getTokenFromAuthorizationCode({
       clientId: randomUUID() as string,
       issuerState: authorizationGrant.issuer_state,
       metadata: issuerMetadata,
     });
+
+    ux.action.stop();
   } else {
     throw new Error('could not find a supported grant type');
   }

@@ -4,11 +4,15 @@ import { Args, Command } from '@oclif/core';
 import { prompt } from '@oclif/core/lib/cli-ux/prompt.js';
 import { readFile, writeFile } from 'node:fs/promises';
 
-import { listJsonFilesChoices } from '../../utils/file.js';
-import { getIssuerMetadata, parseGrantTypesAsChoices, prependTS } from '../../utils/index.js';
-import { createCredentialOffer } from '../../utils/meeco-org-wallet/credential-offer.js';
-import { GRANT_TYPES } from '../../utils/openid/openid.types.js';
-import { Credential, CredentialMetadata } from './create-credential-offer.types.js';
+import { Credential, CredentialMetadata } from '../../types/create-credential-offer.types.js';
+import { GRANT_TYPES } from '../../types/index.js';
+import { 
+  createCredentialOffer, 
+  getIssuerMetadata, 
+  listJsonFilesChoices, 
+  parseGrantTypesAsChoices,
+  prependTS,
+} from '../../utils/index.js';
 
 export default class CreateCredentialOffer extends Command {
   static args = {

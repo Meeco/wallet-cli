@@ -1,5 +1,5 @@
 import { generateRandomCode } from '../helpers.js';
-import { GRANT_TYPES } from '../openid/openid.types.js';
+import { GRANT_TYPES } from '../../types/openid.types.js';
 import { CREDENTIAL_OFFER_ENDPOINT } from './constants.js';
 
 export type createCredentialOfferArgs = {

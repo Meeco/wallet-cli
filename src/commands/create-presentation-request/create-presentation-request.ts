@@ -2,8 +2,7 @@ import { Args, Command } from '@oclif/core';
 import { prompt } from '@oclif/core/lib/cli-ux/prompt.js';
 import { writeFile } from 'node:fs/promises';
 
-import { prependTS } from '../../utils/helpers.js';
-import { createPresentationRequest } from '../../utils/meeco-org-wallet/presentation-request.js';
+import { createPresentationRequest, prependTS } from '../../utils/index.js';
 
 export default class CreatePresentationRequest extends Command {
   static args = {
@@ -29,7 +28,6 @@ export default class CreatePresentationRequest extends Command {
     const { args } = await this.parse(CreatePresentationRequest);
 
     const response = await createPresentationRequest(args.url, args.definitionId);
-    console.log(response);
 
     const offerFilename = await prompt('Save Presentation Request URI as', { default: prependTS('presentation-request.txt') });
 

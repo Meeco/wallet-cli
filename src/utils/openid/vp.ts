@@ -2,7 +2,7 @@ import { JWK, SignJWT, calculateJwkThumbprint, decodeJwt, importJWK } from 'jose
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
-import { IdTokenPayload, JWT_TYPE, PresentationRequest, SIGNING_ALG, SIOP } from './openid.types.js';
+import { IdTokenPayload, JWT_TYPE, PresentationRequest, SIGNING_ALG, SIOP } from '../../types/openid.types.js';
 
 export function parsePresentationRequestURI(input: string) {
   const matches = [...input.matchAll(/request_uri=(.*)$/g)][0];

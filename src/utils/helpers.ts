@@ -1,4 +1,4 @@
-import { JWT_TYPE } from './openid/openid.types.js';
+import { JWT_TYPE } from '../types/openid.types.js';
 
 export function generateRandomCode(length: number) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -77,6 +77,7 @@ EXAMPLE FILES
 ```
 
 # Meeco Organisation Wallet
+Compatible version `<=0.0.8`
 
 ## `meeco-wallet-cli create-credential-offer`
 

@@ -4,10 +4,11 @@ import { Args, Command } from '@oclif/core';
 import { prompt } from '@oclif/core/lib/cli-ux/prompt.js';
 import { readFile, writeFile } from 'node:fs/promises';
 
-import { Credential, CredentialMetadata } from '../../types/create-credential-offer.types.js';
+import { Credential } from '../../types/create-credential-offer.types.js';
 import { GRANT_TYPES } from '../../types/index.js';
 import { 
   createCredentialOffer, 
+  getCredentialsSupportedAsChoices, 
   getIssuerMetadata, 
   listJsonFilesChoices, 
   parseGrantTypesAsChoices,
@@ -38,22 +39,7 @@ export default class CreateCredentialOffer extends Command {
 
     const issuerMetadata = await getIssuerMetadata(args.url);
 
-    const supportedCredentialsChoices = issuerMetadata.credentials_supported.map(
-      (credential: CredentialMetadata) => {
-        const vc: Credential = {
-          format: credential.format,
-          id: credential.id,
-          name: credential.display[0].name,
-          types: credential.types,
-        };
-        
-        return {
-          description: `${vc.name} (${vc.format})`,
-          name: `${vc.name} (${vc.format})`,
-          value: vc,
-        }
-      }
-    );
+    const supportedCredentialsChoices = getCredentialsSupportedAsChoices(issuerMetadata.credentials_supported);
 
     const selectedGrantType = await select({
       choices: parseGrantTypesAsChoices(issuerMetadata.grant_types_supported),

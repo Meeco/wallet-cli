@@ -3,8 +3,9 @@ import { prompt } from '@oclif/core/lib/cli-ux/prompt.js';
 import { randomUUID } from 'node:crypto';
 import { TokenSet } from 'openid-client';
 
-import { isVcSdJwt, printFetchError } from '../helpers.js';
+import { Credential, CredentialMetadata } from '../../types/create-credential-offer.types.js';
 import { GRANT_TYPES, IssuerMetadata, WELL_KNOWN } from '../../types/openid.types.js';
+import { isVcSdJwt, printFetchError } from '../helpers.js';
 import { getTokenFromAuthorizationCode } from './vci.auth-code.js';
 import { getJwtVcJsonProof, getSdJwtVcJsonProof } from './vci.proof-jwt.js';
 
@@ -14,6 +15,47 @@ export async function getIssuerMetadata(issuer: string): Promise<IssuerMetadata>
     .catch((error) => {
       printFetchError(error);
     });
+}
+
+type supportedCredentialMetadata = {
+  [type: string]: CredentialMetadata
+}
+
+type CredentialChoice = {
+  description: string;
+  name: string;
+  value: Credential;
+}
+
+function parseSupportedCredential(credential: CredentialMetadata): CredentialChoice {
+  const vc: Credential = {
+    format: credential.format,
+    id: credential.id,
+    name: credential.display[0].name,
+    types: credential.types,
+  };
+  
+  return {
+    description: `${vc.name} (${vc.format})`,
+    name: `${vc.name} (${vc.format})`,
+    value: vc,
+  }
+}
+
+export function getCredentialsSupportedAsChoices(metadata: Array<CredentialMetadata> | supportedCredentialMetadata): CredentialChoice[] {
+
+  if (Array.isArray(metadata)) {
+    return metadata.map((credential) => parseSupportedCredential(credential));
+  }
+
+  if (typeof metadata === 'object') {
+    return Object.keys(metadata).map((key) => {
+      const credentialMetadata = <CredentialMetadata>(metadata as supportedCredentialMetadata)[key];
+      return parseSupportedCredential(credentialMetadata);
+    });
+  }
+
+  throw new Error('Unable to parse credentials_supported in issuer metadata');
 }
 
 export function parseCredentialOffer(input: string) {

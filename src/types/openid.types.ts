@@ -1,7 +1,8 @@
 import { JWK } from 'jose';
 
 export enum WELL_KNOWN {
-  OPENID_CREDENTIAL_ISSUER = '.well-known/openid-credential-issuer'
+  OPENID_CONFIGURATION = '.well-known/openid-configuration',
+  OPENID_CREDENTIAL_ISSUER = '.well-known/openid-credential-issuer',
 }
 
 export enum GRANT_TYPES {
@@ -22,12 +23,20 @@ export type SupportedCredential = {
 
 export type IssuerMetadata = {
   [metadata: string]: unknown;
-  authorization_endpoint?: string;
+  authorization_endpoint?: string; // TODO: remove when no longer supporting org-wallet < 0.0.8
   credential_endpoint: string;
   credentials_supported: SupportedCredential[];
-  grant_types_supported: string[];
+  grant_types_supported?: string[]; // TODO: remove when no longer supporting org-wallet < 0.0.8
   issuer: string;
   pushed_authorization_endpoint?: string;
+  token_endpoint?: string; // TODO: remove when no longer supporting org-wallet < 0.0.8
+}
+
+export type OpenidConfiguration = {
+  authorization_endpoint: string;
+  grant_types_supported: string[];
+  issuer: string;
+  jwks_uri: string;
   token_endpoint: string;
 }
 

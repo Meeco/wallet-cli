@@ -14,6 +14,7 @@ import {
   parseGrantTypesAsChoices,
   prependTS,
 } from '../../utils/index.js';
+import { getOpenidConfiguration } from '../../utils/openid/openid-config.js';
 
 export default class CreateCredentialOffer extends Command {
   static args = {
@@ -39,10 +40,14 @@ export default class CreateCredentialOffer extends Command {
 
     const issuerMetadata = await getIssuerMetadata(args.url);
 
+    const openidConfig = await getOpenidConfiguration(args.url);
+
     const supportedCredentialsChoices = getCredentialsSupportedAsChoices(issuerMetadata.credentials_supported);
 
+    const supportedGrantTypes = parseGrantTypesAsChoices(issuerMetadata.grant_types_supported ?? openidConfig.grant_types_supported);
+
     const selectedGrantType = await select({
-      choices: parseGrantTypesAsChoices(issuerMetadata.grant_types_supported),
+      choices: supportedGrantTypes,
       message: 'Select Grant Type'
     });
 

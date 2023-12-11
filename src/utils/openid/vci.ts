@@ -6,6 +6,7 @@ import { TokenSet } from 'openid-client';
 import { Credential, CredentialMetadata } from '../../types/create-credential-offer.types.js';
 import { GRANT_TYPES, IssuerMetadata, WELL_KNOWN } from '../../types/openid.types.js';
 import { isVcSdJwt, printFetchError } from '../helpers.js';
+import { getOpenidConfiguration } from './openid-config.js';
 import { getTokenFromAuthorizationCode } from './vci.auth-code.js';
 import { getJwtVcJsonProof, getSdJwtVcJsonProof } from './vci.proof-jwt.js';
 
@@ -78,9 +79,11 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
   const metadata = credentials[0];
 
   ux.action.start('get issuer metadata');
-
   const issuerMetadata = await getIssuerMetadata(issuer);
+  ux.action.stop();
 
+  ux.action.start('get openid config');
+  const openidConfig = await getOpenidConfiguration(issuer);
   ux.action.stop();
 
   const preAuthGrant = grants[GRANT_TYPES.PREAUTHORIZED_CODE];
@@ -95,8 +98,10 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
 
     ux.action.start('get token using pre-authorized_code');
 
+    const tokenEndpoint = issuerMetadata.token_endpoint ?? openidConfig.token_endpoint;
+
     token = await exchangePreauthCodeWithToken(
-      issuerMetadata.token_endpoint,
+      tokenEndpoint,
       preAuthGrant['pre-authorized_code'],
       userPin,
     );
@@ -108,7 +113,7 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
     token = await getTokenFromAuthorizationCode({
       clientId: randomUUID() as string,
       issuerState: authorizationGrant.issuer_state,
-      metadata: issuerMetadata,
+      openidConfig,
     });
 
     ux.action.stop();

@@ -2,13 +2,13 @@ import http from 'node:http';
 import open from 'open';
 import { Issuer, generators } from 'openid-client';
 
-import { IssuerMetadata } from '../../types/openid.types.js';
+import { OpenidConfiguration } from '../../types/openid.types.js';
 
 type getTokenFromAuthorizationCodeArgs = {
   clientId: string;
   host?: string;
   issuerState: string;
-  metadata: IssuerMetadata;
+  openidConfig: OpenidConfiguration;
   port?: string;
 }
 
@@ -16,12 +16,12 @@ export async function getTokenFromAuthorizationCode({
   clientId,
   host = 'http://localhost',
   issuerState,
-  metadata,
+  openidConfig,
   port = '6363',
 }: getTokenFromAuthorizationCodeArgs) {
   const listener = `${host}:${port}`;
 
-  const issuer = new Issuer(metadata);
+  const issuer = new Issuer(openidConfig);
 
   const client = new issuer.Client({
     'client_id': clientId,

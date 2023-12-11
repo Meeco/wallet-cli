@@ -2,6 +2,7 @@ import { Args, Command } from '@oclif/core';
 import { prompt } from '@oclif/core/lib/cli-ux/prompt.js';
 import { writeFile } from 'node:fs/promises';
 
+import { DATA_FOLDER } from '../../utils/constants.js';
 import { createPresentationRequest, prependTS } from '../../utils/index.js';
 
 export default class CreatePresentationRequest extends Command {
@@ -31,6 +32,6 @@ export default class CreatePresentationRequest extends Command {
 
     const offerFilename = await prompt('Save Presentation Request URI as', { default: prependTS('presentation-request.txt') });
 
-    await writeFile(`./.data/${offerFilename}`, decodeURIComponent(response.authRequestURI));
+    await writeFile(`${DATA_FOLDER}/${offerFilename}`, decodeURIComponent(response.authRequestURI));
   }
 }

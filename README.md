@@ -40,7 +40,10 @@ Claim Credential Offer
 
 ```
 USAGE
-  $ ./bin/dev.js claim
+  $ ./bin/dev.js claim [-f <value>]
+
+FLAGS
+  -f, --file=<value>  credential offer filename in ".data" folder
 
 DESCRIPTION
   Issue a credential by claiming the provided Credential Offer.
@@ -59,7 +62,10 @@ Currently only support `vc+sd-jwt` a presentation.
 
 ```
 USAGE
-  $ ./bin/dev.js present
+  $ ./bin/dev.js present [-f <value>]
+
+FLAGS
+  -f, --file=<value>  presentation request filename in ".data" folder
 
 DESCRIPTION
   Generate a Presentation Request based on the Provided Presentation Request URI and selected Credential.

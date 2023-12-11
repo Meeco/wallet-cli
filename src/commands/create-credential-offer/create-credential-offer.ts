@@ -6,6 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 import { Credential } from '../../types/create-credential-offer.types.js';
 import { GRANT_TYPES } from '../../types/index.js';
+import { DATA_FOLDER } from '../../utils/constants.js';
 import { 
   createCredentialOffer, 
   getCredentialsSupportedAsChoices, 
@@ -82,7 +83,7 @@ export default class CreateCredentialOffer extends Command {
 
     const offerFilename = await prompt('Save offer as', { default: prependTS('credential-offer.txt') });
 
-    await writeFile(`./.data/${offerFilename}`, decodeURIComponent(response.uri));
+    await writeFile(`${DATA_FOLDER}/${offerFilename}`, decodeURIComponent(response.uri));
 
     if (response.userPin) {
       this.log('user PIN:', response.userPin);

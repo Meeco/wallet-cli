@@ -29,11 +29,13 @@ type CredentialChoice = {
 }
 
 function parseSupportedCredential(credential: CredentialMetadata): CredentialChoice {
+  const credentialTypes = credential.types ?? credential.credential_definition.types ?? [credential.credential_definition.vct as string];
+
   const vc: Credential = {
     format: credential.format,
     id: credential.id,
     name: credential.display[0].name,
-    types: credential.types,
+    types: credentialTypes,
   };
   
   return {

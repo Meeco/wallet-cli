@@ -62,7 +62,7 @@ export function getCredentialsSupportedAsChoices(metadata: Array<CredentialMetad
 }
 
 export function parseCredentialOffer(input: string) {
-  const matches = [...input.matchAll(/credential_offer_uri=(.*)$/g)][0];
+  const matches = [...input.trim().matchAll(/credential_offer_uri=(.*)$/g)][0];
   return decodeURIComponent(matches[1]);
 }
 

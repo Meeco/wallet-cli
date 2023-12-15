@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { IdTokenPayload, JWT_TYPE, PresentationRequest, SIGNING_ALG, SIOP } from '../../types/openid.types.js';
 
 export function parsePresentationRequestURI(input: string) {
-  const matches = [...input.matchAll(/request_uri=(.*)$/g)][0];
+  const matches = [...input.trim().matchAll(/request_uri=(.*)$/g)][0];
   return decodeURIComponent(matches[1]);
 }
 

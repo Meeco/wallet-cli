@@ -62,7 +62,14 @@ export type PresentationRequest = {
   claims?: {
     vp_token?: {
       presentation_definition?: {
+        [prop: string]: unknown;
         id: string;
+        input_descriptors: Array<{
+          constraints: Array<{
+            [prop: string]: unknown;
+          }>;
+          id: string;
+        }>;
       }
     }
   };

@@ -35,13 +35,12 @@ async function createSdJwtVpToken(audience: string, nonce: number, compactSdJwtV
 }
 
 async function createSdJwtIdToken(requestPayload: PresentationRequest, definitionId: string, jwk: JWK, privateKey: Buffer) {
-  const descriptorMap = [
-    {
+  const descriptorMap = requestPayload.claims?.vp_token?.presentation_definition?.input_descriptors?.map((descriptor) => ({
+      constraints: descriptor.constraints,
       format: JWT_TYPE.VC_SD_JWT,
-      id: definitionId,
-      path: '$',
-    },
-  ];
+      id: descriptor.id,
+      path: '$'
+    }))
 
   const _vpToken = {
     'presentation_submission': {

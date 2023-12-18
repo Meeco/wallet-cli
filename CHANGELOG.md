@@ -1,3 +1,7 @@
+## [1.3.1] (2023.12.18)
+
+Add support to call `claim` and `present` commands with `--url` or `-u` flag to accept url from stdin
+
 ## [1.2.1] (2023.12.15)
 
 Bugfix: trim credential-offer and presentation-request input files

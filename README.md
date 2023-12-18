@@ -29,10 +29,16 @@ $ ./bin/dev.js COMMAND
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`./bin/dev.js claim`](#meeco-wallet-cli-claim)
-* [`./bin/dev.js present`](#meeco-wallet-cli-present)
-* [`./bin/dev.js create-credential-offer`](#meeco-wallet-cli-create-credential-offer)
-* [`./bin/dev.js create-presentation-request`](#meeco-wallet-cli-create-presentation-request)
+- [meeco-wallet-cli](#meeco-wallet-cli)
+- [Configuration](#configuration)
+  - [Holder Details](#holder-details)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`meeco-wallet-cli claim`](#meeco-wallet-cli-claim)
+  - [`meeco-wallet-cli present`](#meeco-wallet-cli-present)
+- [Meeco Organisation Wallet](#meeco-organisation-wallet)
+  - [`meeco-wallet-cli create-credential-offer`](#meeco-wallet-cli-create-credential-offer)
+  - [`meeco-wallet-cli create-presentation-request`](#meeco-wallet-cli-create-presentation-request)
 
 ## `meeco-wallet-cli claim`
 
@@ -44,10 +50,11 @@ USAGE
 
 FLAGS
   -f, --file=<value>  credential offer filename in ".data" folder
+  -u, --url=<value>  direct URL for the credential offer
 
 DESCRIPTION
   Issue a credential by claiming the provided Credential Offer.
-  Will prompt to select a file containing Credential Offer URI.
+  Will prompt to select a file containing Credential Offer URI when called without file or url arguments.
   Will prompt for a filename to save the issued Credential (JWT).
 
 EXAMPLE FILE
@@ -66,14 +73,14 @@ USAGE
 
 FLAGS
   -f, --file=<value>  presentation request filename in ".data" folder
-
+  -u, --url=<value>  direct URL for the presentation request
 DESCRIPTION
   Generate a Presentation Request based on the Provided Presentation Request URI and selected Credential.
-  Will prompt to select a file containing Presentation Request URI.
+  Will prompt to select a file containing Presentation Request URI when called without file or url arguments.
   Will prompt to select a JWT file containing the credential.
   Will prompt for a filename to save the generated submission.
   Will prompt for a filename to save the submission result.
-  
+
 EXAMPLE FILES
   (#presentation-offer.txt)
   openid-vc://?request_uri=https://api-dev.svx.exchange/oidc/presentations/requests/295fadc5-5843-46bd-bd5e-e36d7f4f1605/jwt
@@ -118,7 +125,7 @@ USAGE
   $ ./bin/dev.js create-credential-offer [DEFINITION_ID] [URL]
 
 ARGUMENTS
-  DEFINITION_ID  SVX presentation id. 
+  DEFINITION_ID  SVX presentation id.
                  Default: `3db41820-1e4c-4622-83d6-6cd3f0bc9f7c`.
                           a presentation requestion a student ID VC
   URL            Running instance of meeco-organisation-wallet. Default: `http://127.0.0.1:3000`

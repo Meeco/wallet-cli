@@ -203,6 +203,8 @@ export function getCredentialInfo(credentials: Array<CredentialOfferDetails>, is
             vct: credentialMetadata.credential_definition.vct as string,
           },
           format: credentialMetadata.format,
+          // backwards compatibility
+          types: [credentialMetadata.credential_definition.vct as string]
         }
       : {
           format: credentialMetadata.format,

@@ -101,7 +101,7 @@ EXAMPLE FILES
 
 # Meeco Organisation Wallet
 
-Compatible version `<=0.0.10`
+Compatible version `>=0.0.10`
 
 ## `meeco-wallet-cli create-credential-offer`
 

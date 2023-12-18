@@ -1,10 +1,14 @@
+## [1.3.2]
+
+support `organisation-wallet` version `<=0.0.10`
+add [-v --verbose] flags to `claim` - to print out credential to terminal
+
 ## [1.3.1] (2023.12.18)
 
 Add support to call `claim` and `present` commands with `--url` or `-u` flag to accept url from stdin
 
 ## [1.3.0] (2023.12.18)
 
-Add support for organisation-wallet v0.0.10
 new format of payload for `/credential` endpoint
 Add error messages on failing to fetch credential-offer or claiming credential
 

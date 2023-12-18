@@ -55,11 +55,12 @@ Claim Credential Offer
 
 ```
 USAGE
-  $ ./bin/dev.js claim [-f <value>]
+  $ ./bin/dev.js claim [-f <value>] [-v]
 
 FLAGS
   -f, --file=<value>  credential offer filename in ".data" folder
   -u, --url=<value>  direct URL for the credential offer
+  -v, --verbose       Print out credential at end of command
 
 DESCRIPTION
   Issue a credential by claiming the provided Credential Offer.

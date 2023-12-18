@@ -26,6 +26,10 @@ export default class Claim extends Command {
       char: 'u',
       description: 'direct URL for the credential offer',
     }),
+    verbose: Flags.boolean({ 
+      char: 'v',
+      description: 'Print out credential at end of command',
+    })
   };
 
   async run(): Promise<void> {
@@ -56,5 +60,11 @@ export default class Claim extends Command {
 
     const vcFilename = await prompt('Save Credential as', { default: prependTS('credential.jwt') });
     await writeFile(`${DATA_FOLDER}/${vcFilename}`, verifiableCredential);
+
+    if (flags.verbose) {
+      console.log("==============================");
+      console.log(verifiableCredential);
+      console.log("==============================");
+    }
   }
 }

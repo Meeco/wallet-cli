@@ -1,19 +1,21 @@
-import { generateRandomCode } from '../helpers.js';
 import { GRANT_TYPES } from '../../types/openid.types.js';
+import { generateRandomCode, parseFetchResponse } from '../helpers.js';
 import { CREDENTIAL_OFFER_ENDPOINT } from './constants.js';
 
 export type createCredentialOfferArgs = {
   claims: unknown;
-  format: string;
+  credentialIdentifiers?: string[];
+  format?: string;
   grantType: string;
   pinRequired: boolean;
-  types: string[];
+  types?: string[];
   url: string;
   userPin?: string;
 }
 
 export async function createCredentialOffer({
   claims,
+  credentialIdentifiers,
   format,
   grantType,
   pinRequired,
@@ -40,16 +42,13 @@ export async function createCredentialOffer({
     };
   }
 
+  const credentials = credentialIdentifiers ?? [ { format, types } ];
+
   const payload = {
     credentialDataSupplierInput: {
       claims,
     },
-    credentials: [
-      {
-        format,
-        types,
-      },
-    ],
+    credentials,
     grants,
   }
 
@@ -60,11 +59,5 @@ export async function createCredentialOffer({
     },
     method: 'POST',
   })
-  .then((res) => {
-    if (res.status !== 200) {
-      throw new Error(res.statusText);
-    }
-
-    return res.json()
-  });
+  .then((res) => parseFetchResponse(res));
 }

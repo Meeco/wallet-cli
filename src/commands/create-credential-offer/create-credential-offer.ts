@@ -69,12 +69,20 @@ export default class CreateCredentialOffer extends Command {
 
     const claims = await readFile(claimsFile).then((data) => JSON.parse(data.toString()));
     
+    const credentialInformation = selectedCredential.credentialIdentifier 
+      ? {
+          credentialIdentifiers: [selectedCredential.credentialIdentifier] 
+        } 
+      : {
+        format: selectedCredential.format,
+        types: selectedCredential.types,
+      }
+
     const response = await createCredentialOffer({
+      ...credentialInformation,
       claims,
-      format: selectedCredential.format,
       grantType: selectedGrantType,
       pinRequired,
-      types: selectedCredential.types,
       url: args.url,
     }).catch((error) => {
       this.log('Failed to Create Credential offer:', error.message);

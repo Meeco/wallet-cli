@@ -5,7 +5,7 @@ import { TokenSet } from 'openid-client';
 
 import { Credential, CredentialMetadata } from '../../types/create-credential-offer.types.js';
 import { GRANT_TYPES, IssuerMetadata, WELL_KNOWN } from '../../types/openid.types.js';
-import { isVcSdJwt, printFetchError } from '../helpers.js';
+import { isVcSdJwt, parseFetchResponse, printFetchError } from '../helpers.js';
 import { getOpenidConfiguration } from './openid-config.js';
 import { getTokenFromAuthorizationCode } from './vci.auth-code.js';
 import { getJwtVcJsonProof, getSdJwtVcJsonProof } from './vci.proof-jwt.js';
@@ -182,7 +182,7 @@ export async function issueVC(issuer: string, endpoint: string, token: TokenSet,
       'Content-Type': 'application/json',
     },
     method: 'post',
-  }).then((res) => res.json());
+  }).then((res) => parseFetchResponse(res));
 
-  return result.credential;
+  return result?.credential;
 }

@@ -49,6 +49,11 @@ export default class Claim extends Command {
     }
 
     const verifiableCredential = await claimCredentialOffer(credentialOfferURI);
+
+    if (!verifiableCredential) {
+      return;
+    }
+
     const vcFilename = await prompt('Save Credential as', { default: prependTS('credential.jwt') });
     await writeFile(`${DATA_FOLDER}/${vcFilename}`, verifiableCredential);
   }

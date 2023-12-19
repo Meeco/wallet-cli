@@ -29,14 +29,7 @@ export type SupportedCredentialMap = {
   [identifier: string]: SupportedCredential;
 }
 
-export type CredentialOfferDetailsDraft10 = {
-  format: string;
-  types: string[];
-}
-
-export type CredentialOfferDetailsDraft12 = string;
-
-export type CredentialOfferDetails =  CredentialOfferDetailsDraft10[] | CredentialOfferDetailsDraft12[];
+export type CredentialOfferDetails = string[];
 
 export type IssuerMetadata = {
   [metadata: string]: unknown;

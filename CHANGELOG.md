@@ -1,7 +1,8 @@
 ## [1.3.2]
 
-support `organisation-wallet` version `<=0.0.10`
 add [-v --verbose] flags to `claim` - to print out credential to terminal
+Add Support for `organisation-wallet` version `0.0.10`
+Drop Support for `organisation-wallet` version `<=0.0.9`
 
 ## [1.3.1] (2023.12.18)
 

@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { TokenSet } from 'openid-client';
 
 import { Credential, CredentialMetadata } from '../../types/create-credential-offer.types.js';
-import { CredentialOfferDetails, CredentialOfferDetailsDraft10, GRANT_TYPES, IssuerMetadata, SupportedCredentialMap, WELL_KNOWN } from '../../types/openid.types.js';
+import { CredentialOfferDetails, GRANT_TYPES, IssuerMetadata, SupportedCredentialMap, WELL_KNOWN } from '../../types/openid.types.js';
 import { isVcSdJwt, parseFetchResponse, printFetchError } from '../helpers.js';
 import { getOpenidConfiguration } from './openid-config.js';
 import { getTokenFromAuthorizationCode } from './vci.auth-code.js';
@@ -26,6 +26,12 @@ type CredentialChoice = {
   description: string;
   name: string;
   value: Credential;
+}
+
+class CredentialOfferError extends Error {
+  constructor(message = "") {
+    super(message);
+  }
 }
 
 function parseSupportedCredential(credentialIdentifier: string, credential: CredentialMetadata): CredentialChoice {
@@ -82,7 +88,7 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
 
   ux.action.start(`get issuer metadata from ${issuer}`);
   const issuerMetadata = await getIssuerMetadata(issuer);
-  const credentialMetadata = await getCredentialInfo(credentials, issuerMetadata);
+  const credentialMetadata = getCredentialInfo(credentials, issuerMetadata);
   ux.action.stop();
 
   const authorizationServer = issuerMetadata.authorization_server ?? issuer;
@@ -162,7 +168,7 @@ type CredentialOfferMetadata = {
     vct: string;
   };
   format: string;
-  types?: string[];
+  types?: string[]; // TODO: move this types into credential_definition to support jwt_vc_json
 }
 
 export async function issueVC(issuer: string, endpoint: string, token: TokenSet, metadata: CredentialOfferMetadata) {
@@ -193,24 +199,22 @@ export async function issueVC(issuer: string, endpoint: string, token: TokenSet,
 }
 
 export function getCredentialInfo(credentials: Array<CredentialOfferDetails>, issuerMetadata: IssuerMetadata): CredentialOfferMetadata {
-  if (typeof credentials[0] === 'string') {
-    const credentialIdentifier = credentials[0];
-    const credentialMetadata = (issuerMetadata.credentials_supported as SupportedCredentialMap)[credentialIdentifier];
-
-    return isVcSdJwt(credentialMetadata)
-      ? {
-          'credential_definition': {
-            vct: credentialMetadata.credential_definition.vct as string,
-          },
-          format: credentialMetadata.format,
-          // backwards compatibility
-          types: [credentialMetadata.credential_definition.vct as string]
-        }
-      : {
-          format: credentialMetadata.format,
-          types: credentialMetadata.credential_definition?.types ?? credentialMetadata.types
-        }
+  if (typeof credentials[0] !== 'string') {
+    throw new CredentialOfferError('Unsupported format of credential_offer.credentials');
   }
 
-  return credentials[0] as unknown as CredentialOfferDetailsDraft10;
+  const credentialIdentifier = credentials[0];
+  const credentialMetadata = (issuerMetadata.credentials_supported as SupportedCredentialMap)[credentialIdentifier];
+
+  return isVcSdJwt(credentialMetadata)
+    ? {
+        'credential_definition': {
+          vct: credentialMetadata.credential_definition.vct as string,
+        },
+        format: credentialMetadata.format,
+      }
+    : {
+        format: credentialMetadata.format,
+        types: credentialMetadata.credential_definition?.types ?? credentialMetadata.types
+      }
 }

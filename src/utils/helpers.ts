@@ -25,6 +25,17 @@ export async function printFetchError(res: Response, message = 'HTTP request fai
   console.log(`Response: ${body}`);
 }
 
+export async function parseFetchResponse(res: Response) {
+  if (res.status === 200) {
+    return res.json();
+  }
+
+  console.log(`==============================================`);
+  console.log(`Status code: ${res.status}`);
+  console.log(await res.text());
+  console.log(`==============================================`);
+}
+
 export function isVcSdJwt({ format }: { format: string }) {
   return format === JWT_TYPE.VC_SD_JWT;
 }

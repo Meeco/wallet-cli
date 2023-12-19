@@ -1,34 +1,43 @@
-meeco-wallet-cli
-=================
+# meeco-wallet-cli
 
 <!-- toc -->
-* [Configuration](#configuration)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 <!-- config -->
+
 # Configuration
 
 ## Holder Details
+
 ```
   # config/holder.json
   uri: # Holder identifier to be attached to the credential / presentation
   jwk: # private secp256r1 Key as JWK
 
 ```
+
 <!-- configstop -->
 
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install
 $ chmod +x ./bin/dev.js
 $ ./bin/dev.js COMMAND
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
+
 - [meeco-wallet-cli](#meeco-wallet-cli)
 - [Configuration](#configuration)
   - [Holder Details](#holder-details)
@@ -46,11 +55,12 @@ Claim Credential Offer
 
 ```
 USAGE
-  $ ./bin/dev.js claim [-f <value>]
+  $ ./bin/dev.js claim [-f <value>] [-v]
 
 FLAGS
   -f, --file=<value>  credential offer filename in ".data" folder
   -u, --url=<value>  direct URL for the credential offer
+  -v, --verbose       Print out credential at end of command
 
 DESCRIPTION
   Issue a credential by claiming the provided Credential Offer.
@@ -90,7 +100,8 @@ EXAMPLE FILES
 ```
 
 # Meeco Organisation Wallet
-Compatible version `<=0.0.8`
+
+Compatible version `>=0.0.10`
 
 ## `meeco-wallet-cli create-credential-offer`
 

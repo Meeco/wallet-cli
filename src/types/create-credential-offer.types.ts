@@ -10,6 +10,7 @@ export type CredentialMetadata = {
 }
 
 export type Credential = {
+  credentialIdentifier: string;
   format: string;
   id: string;
   name: string;

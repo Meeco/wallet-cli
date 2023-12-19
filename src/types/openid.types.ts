@@ -25,11 +25,17 @@ export type SupportedCredential = {
   types?: string[];
 }
 
+export type SupportedCredentialMap = {
+  [identifier: string]: SupportedCredential;
+}
+
+export type CredentialOfferDetails = string[];
+
 export type IssuerMetadata = {
   [metadata: string]: unknown;
   authorization_endpoint?: string; // TODO: remove when no longer supporting org-wallet < 0.0.8
   credential_endpoint: string;
-  credentials_supported: SupportedCredential[];
+  credentials_supported: SupportedCredential[] | SupportedCredentialMap;
   grant_types_supported?: string[]; // TODO: remove when no longer supporting org-wallet < 0.0.8
   issuer: string;
   pushed_authorization_endpoint?: string;

@@ -9,6 +9,7 @@ import { DATA_FOLDER } from '../../utils/constants.js';
 import {
   generatePresentationRequestSubmission,
   listFilesAsInquirerChoice,
+  parseFetchResponse,
   parsePresentationRequestURI,
   prependTS,
 } from '../../utils/index.js';
@@ -79,17 +80,19 @@ export default class Present extends Command {
     const submissionFile = prependTS('submission.json');
     this.log('Saving Presentation Request submission to', submissionFile);
     await writeFile(`${DATA_FOLDER}/${submissionFile}`, JSON.stringify(requestSubmission));
-
-    const response = await fetch(requestPayload.redirect_uri, {
+    
+    await fetch(requestPayload.redirect_uri, {
       body: JSON.stringify(requestSubmission),
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'post',
-    }).then((res) => res.json());
+    })
+    .then((res) => parseFetchResponse(res))
+    .then((response) => {
+      this.log('Presentation request completed');
+      this.log('Response:', response);
+    });
 
-    const submissionResultFile = prependTS('submission-result.json');
-    this.log('Saving Presentation Request submission Result to', submissionResultFile);
-    writeFile(`${DATA_FOLDER}/${submissionResultFile}`, JSON.stringify(response));
   }
 }

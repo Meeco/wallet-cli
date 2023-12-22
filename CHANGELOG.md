@@ -1,3 +1,8 @@
+## [1.3.3]
+
+Add better handling for present http errors
+Simplify response on successful `present`
+
 ## [1.3.2]
 
 add [-v --verbose] flags to `claim` - to print out credential to terminal

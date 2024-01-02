@@ -10,6 +10,25 @@ export enum GRANT_TYPES {
   PREAUTHORIZED_CODE = 'urn:ietf:params:oauth:grant-type:pre-authorized_code'
 }
 
+export enum SIGNING_ALG {
+  ES256 = 'ES256'
+}
+
+export enum JWT_TYPE  {
+  JWT = 'JWT',
+  KEY_BINDING_JWT = 'kb+jwt',
+  VC_SD_JWT = 'vc+sd-jwt',
+};
+
+export enum SIOP {
+  V2 = 'https://self-issued.me/v2/openid-vc'
+}
+
+export enum AuthorizationDetailTypes {
+  OpenidCredential = 'openid_credential',
+}
+
+
 export type SupportedCredential = {
   credential_definition: {
     types?: string[];
@@ -43,27 +62,13 @@ export type IssuerMetadata = {
 }
 
 export type OpenidConfiguration = {
+  authorization_details_types_supported: string[];
   authorization_endpoint: string;
   grant_types_supported: string[];
   issuer: string;
   jwks_uri: string;
   token_endpoint: string;
 }
-
-export enum SIGNING_ALG {
-  ES256 = 'ES256'
-}
-
-export enum JWT_TYPE  {
-  JWT = 'JWT',
-  KEY_BINDING_JWT = 'kb+jwt',
-  VC_SD_JWT = 'vc+sd-jwt',
-};
-
-export enum SIOP {
-  V2 = 'https://self-issued.me/v2/openid-vc'
-}
-
 export type PresentationRequest = {
   claims?: {
     vp_token?: {

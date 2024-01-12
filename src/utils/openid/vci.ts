@@ -99,6 +99,10 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
   const preAuthGrant = grants[GRANT_TYPES.PREAUTHORIZED_CODE];
   const authorizationGrant = grants[GRANT_TYPES.AUTHORIZATION_CODE];
 
+  if (preAuthGrant && authorizationGrant) {
+    // Choice of which grant to use
+  }
+
   let token;
 
   if (preAuthGrant) {
@@ -122,7 +126,7 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
 
     token = await getTokenFromAuthorizationCode({
       authorizationDetails: generateAuthorizationDetails(openidConfig, credentialMetadata),
-      clientId: randomUUID() as string,
+      clientId: '218232426', // randomUUID() as string,
       issuerState: authorizationGrant.issuer_state,
       openidConfig,
     });
@@ -137,12 +141,14 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
 
 async function exchangePreauthCodeWithToken(endpoint: string, code: string, userPin?: string) {
   const payload = {
+    'client_id': '218232426',
     'grant_type': GRANT_TYPES.PREAUTHORIZED_CODE,
     'pre-authorized_code': code,
     'user_pin': userPin,
   };
 
   const formPayload = Object.keys(payload)
+    .filter((key) => Boolean(payload[key as keyof typeof payload]))
     .map((key: string) => key + '=' + payload[key as keyof typeof payload])
     .join('&');
 

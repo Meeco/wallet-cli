@@ -1,10 +1,11 @@
 import http from 'node:http';
 import open from 'open';
-import { Issuer, generators } from 'openid-client';
+import { AuthorizationParameters, Issuer, generators } from 'openid-client';
 
 import { OpenidConfiguration } from '../../types/openid.types.js';
 
 type getTokenFromAuthorizationCodeArgs = {
+  authorizationDetails?: Array<object>;
   clientId: string;
   host?: string;
   issuerState: string;
@@ -13,6 +14,7 @@ type getTokenFromAuthorizationCodeArgs = {
 }
 
 export async function getTokenFromAuthorizationCode({
+  authorizationDetails,
   clientId,
   host = 'http://localhost',
   issuerState,
@@ -33,12 +35,18 @@ export async function getTokenFromAuthorizationCode({
   const codeVerifier = generators.codeVerifier();
   const codeChallenge = generators.codeChallenge(codeVerifier);
 
-  const authorizationUrl = client.authorizationUrl({
+  const options: AuthorizationParameters = {
     'code_challenge': codeChallenge,
     'code_challenge_method': 'S256',
     'issuer_state': issuerState,
-    scope: 'openid',
-  });
+    scope: 'openid'
+  }
+  if (authorizationDetails) {
+    // eslint-disable-next-line camelcase
+    options.authorization_details = JSON.stringify(authorizationDetails);
+  }
+
+  const authorizationUrl = client.authorizationUrl(options);
 
   let params: { [props: string]: unknown } = {};
 

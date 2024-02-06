@@ -1,3 +1,7 @@
+## [1.3.4]
+
+Add Support for `authorization_details` parameter for Authorization Code flow
+
 ## [1.3.3]
 
 Add better handling for present http errors

@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { TokenSet } from 'openid-client';
 
 import { Credential, CredentialMetadata } from '../../types/create-credential-offer.types.js';
-import { CredentialOfferDetails, GRANT_TYPES, IssuerMetadata, SupportedCredentialMap, WELL_KNOWN } from '../../types/openid.types.js';
+import { AuthorizationDetailTypes, CredentialOfferDetails, GRANT_TYPES, IssuerMetadata, OpenidConfiguration, SupportedCredentialMap, WELL_KNOWN } from '../../types/openid.types.js';
 import { isVcSdJwt, parseFetchResponse, printFetchError } from '../helpers.js';
 import { getOpenidConfiguration } from './openid-config.js';
 import { getTokenFromAuthorizationCode } from './vci.auth-code.js';
@@ -121,6 +121,7 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
     ux.action.start('get token from Authorization Code');
 
     token = await getTokenFromAuthorizationCode({
+      authorizationDetails: generateAuthorizationDetails(openidConfig, credentialMetadata),
       clientId: randomUUID() as string,
       issuerState: authorizationGrant.issuer_state,
       openidConfig,
@@ -217,4 +218,23 @@ export function getCredentialInfo(credentials: Array<CredentialOfferDetails>, is
         format: credentialMetadata.format,
         types: credentialMetadata.credential_definition?.types ?? credentialMetadata.types
       }
+}
+
+/**
+ * Helper
+ */
+
+function isAuthorizationDetailsSupported(openidConfig: OpenidConfiguration) {
+  return openidConfig?.authorization_details_types_supported && openidConfig.authorization_details_types_supported.includes(AuthorizationDetailTypes.OpenidCredential);
+}
+
+function generateAuthorizationDetails(openidConfig: OpenidConfiguration, credentialMetadata: CredentialOfferMetadata) {
+  return isAuthorizationDetailsSupported(openidConfig)
+    ? [
+        {
+          ...credentialMetadata,
+          type: AuthorizationDetailTypes.OpenidCredential,
+        }
+      ]
+    : undefined;
 }

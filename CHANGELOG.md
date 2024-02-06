@@ -1,3 +1,7 @@
+## [1.4.0]
+
+Add [PAR - Pushed Authorization Request](https://www.rfc-editor.org/rfc/rfc9126.html) support
+
 ## [1.3.3]
 
 Add better handling for present http errors

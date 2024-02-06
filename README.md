@@ -133,7 +133,7 @@ Create Presentation Request
 
 ```
 USAGE
-  $ ./bin/dev.js create-credential-offer [DEFINITION_ID] [URL]
+  $ ./bin/dev.js create-presentation-request [DEFINITION_ID] [URL]
 
 ARGUMENTS
   DEFINITION_ID  SVX presentation id.

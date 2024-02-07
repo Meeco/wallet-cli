@@ -1,6 +1,7 @@
-import http from 'node:http';
+import { ux } from '@oclif/core';
+import http, { Server } from 'node:http';
 import open from 'open';
-import { Issuer, generators } from 'openid-client';
+import { AuthorizationParameters, CallbackParamsType, Client, Issuer, generators } from 'openid-client';
 
 import { OpenidConfiguration } from '../../types/openid.types.js';
 
@@ -10,7 +11,9 @@ type getTokenFromAuthorizationCodeArgs = {
   issuerState: string;
   openidConfig: OpenidConfiguration;
   port?: string;
-}
+};
+
+type codeExchangeCallback = (server: Server, params: CallbackParamsType) => Promise<void>;
 
 export async function getTokenFromAuthorizationCode({
   clientId,
@@ -24,58 +27,104 @@ export async function getTokenFromAuthorizationCode({
   const issuer = new Issuer(openidConfig);
 
   const client = new issuer.Client({
-    'client_id': clientId,
-    'redirect_uris': [listener],
-    'response_types': ['code'],
-    'token_endpoint_auth_method': 'none',
+    client_id: clientId,
+    token_endpoint_auth_method: 'none',
   });
 
   const codeVerifier = generators.codeVerifier();
   const codeChallenge = generators.codeChallenge(codeVerifier);
 
-  const authorizationUrl = client.authorizationUrl({
-    'code_challenge': codeChallenge,
-    'code_challenge_method': 'S256',
-    'issuer_state': issuerState,
+  const authParams = {
+    code_challenge: codeChallenge,
+    code_challenge_method: 'S256',
+    issuer_state: issuerState,
+    redirect_uri: listener,
+    response_type: 'code',
     scope: 'openid',
-  });
+  };
 
-  let params: { [props: string]: unknown } = {};
+  const authorizationUrl = await getAuthorizationUrl(client, openidConfig, authParams);
 
-  let returnToken: (value: unknown) => void;
-  let rejectToken: (value: unknown) => void;
-  
-  const promise = new Promise((resolve, reject) => {
-    returnToken = resolve;
-    rejectToken = reject;
-  });
+  const { callback, promise } = getLocalCallbackFunction(client, listener, codeVerifier);
+  await initLocalWebServer(client, port, callback);
 
-  const completeFlow = async () => {
-    const token = await client.oauthCallback(listener, params, { 
-      'code_verifier': codeVerifier 
-    }).catch((error) => rejectToken(error));
+  await open(authorizationUrl);
 
-    server.close();
+  return promise;
+}
 
-    returnToken(token);
+async function getAuthorizationUrl(
+  client: Client,
+  openidConfig: OpenidConfiguration,
+  params: AuthorizationParameters,
+): Promise<string> {
+  let authorizationUrl: string;
+
+  if (openidConfig.pushed_authorization_request_endpoint) {
+    ux.action.start('using Pushed Authorization Request');
+
+    const { request_uri } = await client.pushedAuthorizationRequest(params);
+
+    if (!request_uri) {
+      throw new Error('Failed to obtain request_uri from PAR');
+    }
+
+    authorizationUrl = client.authorizationUrl({ request_uri });
+
+    ux.action.stop();
+  } else {
+    authorizationUrl = client.authorizationUrl(params);
   }
 
-  const server = http
-    .createServer((req, res) => {
+  return authorizationUrl;
+}
+
+async function initLocalWebServer(client: Client, port: string, callback: codeExchangeCallback) {
+  let params: CallbackParamsType = {};
+
+  const server = await http
+    .createServer(async (req, res) => {
       if (req.url?.startsWith('/?')) {
         params = client.callbackParams(req);
-        params.state = params.issuer_state;
+        params.state = params.issuer_state as string;
 
-        completeFlow();
+        await callback(server, params);
 
-        res.end('You can close this page now.');        
+        res.end('You can close this page now.');
       } else {
         res.end('Unsupported');
       }
     })
     .listen(port);
+}
 
-  await open(authorizationUrl);
+function getLocalCallbackFunction(
+  client: Client,
+  listener: string,
+  codeVerifier: string,
+): { callback: codeExchangeCallback; promise: Promise<unknown> } {
+  let returnToken: (value: unknown) => void;
+  let rejectToken: (value: unknown) => void;
 
-  return promise;
+  const promise = new Promise((resolve, reject) => {
+    returnToken = resolve;
+    rejectToken = reject;
+  });
+
+  const callback = async (server: Server, params: CallbackParamsType) => {
+    const token = await client
+      .oauthCallback(listener, params, {
+        code_verifier: codeVerifier,
+      })
+      .catch((error: Error) => rejectToken(error));
+
+    server.close();
+
+    returnToken(token);
+  };
+
+  return {
+    callback,
+    promise,
+  };
 }

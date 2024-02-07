@@ -4,7 +4,13 @@ import { randomUUID } from 'node:crypto';
 import { TokenSet } from 'openid-client';
 
 import { Credential, CredentialMetadata } from '../../types/create-credential-offer.types.js';
-import { CredentialOfferDetails, GRANT_TYPES, IssuerMetadata, SupportedCredentialMap, WELL_KNOWN } from '../../types/openid.types.js';
+import {
+  CredentialOfferDetails,
+  GRANT_TYPES,
+  IssuerMetadata,
+  SupportedCredentialMap,
+  WELL_KNOWN,
+} from '../../types/openid.types.js';
 import { isVcSdJwt, parseFetchResponse, printFetchError } from '../helpers.js';
 import { getOpenidConfiguration } from './openid-config.js';
 import { getTokenFromAuthorizationCode } from './vci.auth-code.js';
@@ -19,23 +25,24 @@ export async function getIssuerMetadata(issuer: string): Promise<IssuerMetadata>
 }
 
 type supportedCredentialMetadata = {
-  [type: string]: CredentialMetadata
-}
+  [type: string]: CredentialMetadata;
+};
 
 type CredentialChoice = {
   description: string;
   name: string;
   value: Credential;
-}
+};
 
 class CredentialOfferError extends Error {
-  constructor(message = "") {
+  constructor(message = '') {
     super(message);
   }
 }
 
 function parseSupportedCredential(credentialIdentifier: string, credential: CredentialMetadata): CredentialChoice {
-  const credentialTypes = credential.types ?? credential.credential_definition.types ?? [credential.credential_definition.vct as string];
+  const credentialTypes = credential.types ??
+    credential.credential_definition.types ?? [credential.credential_definition.vct as string];
 
   const vc: Credential = {
     credentialIdentifier,
@@ -44,16 +51,17 @@ function parseSupportedCredential(credentialIdentifier: string, credential: Cred
     name: credential.display[0].name,
     types: credentialTypes,
   };
-  
+
   return {
     description: `${vc.name} (${vc.format})`,
     name: `${vc.name} (${vc.format})`,
     value: vc,
-  }
+  };
 }
 
-export function getCredentialsSupportedAsChoices(metadata: Array<CredentialMetadata> | supportedCredentialMetadata): CredentialChoice[] {
-
+export function getCredentialsSupportedAsChoices(
+  metadata: Array<CredentialMetadata> | supportedCredentialMetadata,
+): CredentialChoice[] {
   if (Array.isArray(metadata)) {
     return metadata.map((credential) => parseSupportedCredential('', credential));
   }
@@ -108,13 +116,9 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
 
     ux.action.start('get token using pre-authorized_code');
 
-    const tokenEndpoint = issuerMetadata.token_endpoint ?? openidConfig.token_endpoint;
+    const tokenEndpoint = openidConfig.token_endpoint;
 
-    token = await exchangePreauthCodeWithToken(
-      tokenEndpoint,
-      preAuthGrant['pre-authorized_code'],
-      userPin,
-    );
+    token = await exchangePreauthCodeWithToken(tokenEndpoint, preAuthGrant['pre-authorized_code'], userPin);
 
     ux.action.stop();
   } else if (authorizationGrant) {
@@ -136,9 +140,9 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
 
 async function exchangePreauthCodeWithToken(endpoint: string, code: string, userPin?: string) {
   const payload = {
-    'grant_type': GRANT_TYPES.PREAUTHORIZED_CODE,
+    grant_type: GRANT_TYPES.PREAUTHORIZED_CODE,
     'pre-authorized_code': code,
-    'user_pin': userPin,
+    user_pin: userPin,
   };
 
   const formPayload = Object.keys(payload)
@@ -169,7 +173,7 @@ type CredentialOfferMetadata = {
   };
   format: string;
   types?: string[]; // TODO: move this types into credential_definition to support jwt_vc_json
-}
+};
 
 export async function issueVC(issuer: string, endpoint: string, token: TokenSet, metadata: CredentialOfferMetadata) {
   /**
@@ -182,7 +186,7 @@ export async function issueVC(issuer: string, endpoint: string, token: TokenSet,
     ...metadata,
     proof: {
       jwt,
-      'proof_type': 'jwt',
+      proof_type: 'jwt',
     },
   };
 
@@ -198,7 +202,10 @@ export async function issueVC(issuer: string, endpoint: string, token: TokenSet,
   return result?.credential;
 }
 
-export function getCredentialInfo(credentials: Array<CredentialOfferDetails>, issuerMetadata: IssuerMetadata): CredentialOfferMetadata {
+export function getCredentialInfo(
+  credentials: Array<CredentialOfferDetails>,
+  issuerMetadata: IssuerMetadata,
+): CredentialOfferMetadata {
   if (typeof credentials[0] !== 'string') {
     throw new CredentialOfferError('Unsupported format of credential_offer.credentials');
   }
@@ -208,13 +215,13 @@ export function getCredentialInfo(credentials: Array<CredentialOfferDetails>, is
 
   return isVcSdJwt(credentialMetadata)
     ? {
-        'credential_definition': {
+        credential_definition: {
           vct: credentialMetadata.credential_definition.vct as string,
         },
         format: credentialMetadata.format,
       }
     : {
         format: credentialMetadata.format,
-        types: credentialMetadata.credential_definition?.types ?? credentialMetadata.types
-      }
+        types: credentialMetadata.credential_definition?.types ?? credentialMetadata.types,
+      };
 }

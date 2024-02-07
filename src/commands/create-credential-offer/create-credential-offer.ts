@@ -7,11 +7,11 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { Credential } from '../../types/create-credential-offer.types.js';
 import { GRANT_TYPES } from '../../types/index.js';
 import { DATA_FOLDER } from '../../utils/constants.js';
-import { 
-  createCredentialOffer, 
-  getCredentialsSupportedAsChoices, 
-  getIssuerMetadata, 
-  listJsonFilesChoices, 
+import {
+  createCredentialOffer,
+  getCredentialsSupportedAsChoices,
+  getIssuerMetadata,
+  listJsonFilesChoices,
   parseGrantTypesAsChoices,
   prependTS,
 } from '../../utils/index.js';
@@ -20,9 +20,9 @@ import { getOpenidConfiguration } from '../../utils/openid/openid-config.js';
 export default class CreateCredentialOffer extends Command {
   static args = {
     url: Args.string({
-      default: 'http://127.0.0.1:3000', 
-      description: 'Meeco Organisation Wallet URL', 
-      required: false
+      default: 'http://127.0.0.1:3000',
+      description: 'Meeco Organisation Wallet URL',
+      required: false,
     }),
   };
 
@@ -45,11 +45,11 @@ export default class CreateCredentialOffer extends Command {
 
     const supportedCredentialsChoices = getCredentialsSupportedAsChoices(issuerMetadata.credentials_supported);
 
-    const supportedGrantTypes = parseGrantTypesAsChoices(issuerMetadata.grant_types_supported ?? openidConfig.grant_types_supported);
+    const supportedGrantTypes = parseGrantTypesAsChoices(openidConfig.grant_types_supported);
 
     const selectedGrantType = await select({
       choices: supportedGrantTypes,
-      message: 'Select Grant Type'
+      message: 'Select Grant Type',
     });
 
     let pinRequired = false;
@@ -63,20 +63,20 @@ export default class CreateCredentialOffer extends Command {
     });
 
     const claimsFile = await select({
-      choices: listJsonFilesChoices(".data"),
-      message: 'Select Claims file'
+      choices: listJsonFilesChoices('.data'),
+      message: 'Select Claims file',
     });
 
     const claims = await readFile(claimsFile).then((data) => JSON.parse(data.toString()));
-    
-    const credentialInformation = selectedCredential.credentialIdentifier 
+
+    const credentialInformation = selectedCredential.credentialIdentifier
       ? {
-          credentialIdentifiers: [selectedCredential.credentialIdentifier] 
-        } 
+          credentialIdentifiers: [selectedCredential.credentialIdentifier],
+        }
       : {
-        format: selectedCredential.format,
-        types: selectedCredential.types,
-      }
+          format: selectedCredential.format,
+          types: selectedCredential.types,
+        };
 
     const response = await createCredentialOffer({
       ...credentialInformation,
@@ -87,7 +87,7 @@ export default class CreateCredentialOffer extends Command {
     }).catch((error) => {
       this.log('Failed to Create Credential offer:', error.message);
       this.exit(1);
-    })
+    });
 
     const offerFilename = await prompt('Save offer as', { default: prependTS('credential-offer.txt') });
 

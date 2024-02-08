@@ -12,7 +12,7 @@ export enum GRANT_TYPES {
 
 export type SupportedCredential = {
   credential_definition: {
-    types?: string[];
+    type?: string[];
     vct?: string;
   };
   cryptographic_binding_methods_supported: string[];
@@ -24,7 +24,6 @@ export type SupportedCredential = {
   ];
   format: string;
   id: string;
-  types?: string[];
 };
 
 export type SupportedCredentialMap = {

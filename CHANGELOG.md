@@ -1,3 +1,7 @@
+## [1.4.1]
+
+Changed credential endpoint payload for `jwt_vc_json` to use `credential_definition.type` to support `organisation-wallet` version `0.0.13`
+
 ## [1.4.0]
 
 Add [PAR - Pushed Authorization Request](https://www.rfc-editor.org/rfc/rfc9126.html) support

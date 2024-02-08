@@ -68,7 +68,7 @@
     "prepare": "npm run build",
     "version": "oclif readme && git add README.md"
   },
-  "version": "1.4.0",
+  "version": "1.4.1",
   "keywords": [
     "oclif",
     "sd-jwt",

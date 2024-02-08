@@ -41,8 +41,8 @@ class CredentialOfferError extends Error {
 }
 
 function parseSupportedCredential(credentialIdentifier: string, credential: CredentialMetadata): CredentialChoice {
-  const credentialTypes = credential.types ??
-    credential.credential_definition.types ?? [credential.credential_definition.vct as string];
+  const credentialTypes = credential.credential_definition.type ??
+    credential.credential_definition.type ?? [credential.credential_definition.vct as string];
 
   const vc: Credential = {
     credentialIdentifier,
@@ -169,10 +169,10 @@ async function exchangePreauthCodeWithToken(endpoint: string, code: string, user
 
 type CredentialOfferMetadata = {
   credential_definition?: {
-    vct: string;
+    type?: string[];
+    vct?: string;
   };
   format: string;
-  types?: string[]; // TODO: move this types into credential_definition to support jwt_vc_json
 };
 
 export async function issueVC(issuer: string, endpoint: string, token: TokenSet, metadata: CredentialOfferMetadata) {
@@ -221,7 +221,9 @@ export function getCredentialInfo(
         format: credentialMetadata.format,
       }
     : {
+        credential_definition: {
+          type: credentialMetadata.credential_definition.type,
+        },
         format: credentialMetadata.format,
-        types: credentialMetadata.credential_definition?.types ?? credentialMetadata.types,
       };
 }

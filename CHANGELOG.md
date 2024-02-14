@@ -1,3 +1,7 @@
+## [1.4.2]
+
+Refactored: `vct` and `claims` properties of `vc+sd-jwt`, previously nested within `credential_definition`, are now at the top level.
+
 ## [1.4.1]
 
 Changed credential endpoint payload for `jwt_vc_json` to use `credential_definition.type` to support `organisation-wallet` version `0.0.13`

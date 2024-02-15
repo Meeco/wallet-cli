@@ -11,7 +11,7 @@ export type createCredentialOfferArgs = {
   types?: string[];
   url: string;
   userPin?: string;
-}
+};
 
 export async function createCredentialOffer({
   claims,
@@ -30,27 +30,27 @@ export async function createCredentialOffer({
     grants = {
       'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
         'pre-authorized_code': randomCode,
-        'user_pin': userPin,
-        'user_pin_required': pinRequired,
+        user_pin: userPin,
+        user_pin_required: pinRequired,
       },
     };
   } else if (grantType === GRANT_TYPES.AUTHORIZATION_CODE) {
     grants = {
-      'authorization_code': {
-        'issuer_state': randomCode,
+      authorization_code: {
+        issuer_state: randomCode,
       },
     };
   }
 
-  const credentials = credentialIdentifiers ?? [ { format, types } ];
+  const credentials = credentialIdentifiers ?? [{ format, types }];
 
   const payload = {
+    credential_configuration_ids: credentials,
     credentialDataSupplierInput: {
       claims,
     },
-    credentials,
     grants,
-  }
+  };
 
   return fetch(`${url}${CREDENTIAL_OFFER_ENDPOINT}`, {
     body: JSON.stringify(payload),
@@ -58,6 +58,5 @@ export async function createCredentialOffer({
       'Content-Type': 'application/json',
     },
     method: 'POST',
-  })
-  .then((res) => parseFetchResponse(res));
+  }).then((res) => parseFetchResponse(res));
 }

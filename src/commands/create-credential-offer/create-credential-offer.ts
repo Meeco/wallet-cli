@@ -43,7 +43,9 @@ export default class CreateCredentialOffer extends Command {
 
     const openidConfig = await getOpenidConfiguration(args.url);
 
-    const supportedCredentialsChoices = getCredentialsSupportedAsChoices(issuerMetadata.credentials_supported);
+    const supportedCredentialsChoices = getCredentialsSupportedAsChoices(
+      issuerMetadata.credential_configurations_supported,
+    );
 
     const supportedGrantTypes = parseGrantTypesAsChoices(openidConfig.grant_types_supported);
 

@@ -1,3 +1,12 @@
+## [1.4.3]
+
+Refactored: changes for OID4VCI spec - draft 13
+
+- `credentials_supported` &rarr; `credential_configurations_supported`
+- `authorization_server` &rarr; `authorization_servers`
+- `credentials` &rarr; `credential_configuration_ids`
+- `user_pin` &rarr; `tx_code` object
+
 ## [1.4.2]
 
 Refactored: `vct` and `claims` properties of `vc+sd-jwt`, previously nested within `credential_definition`, are now at the top level.

@@ -92,14 +92,14 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
 
   ux.action.stop();
 
-  const { credential_issuer: issuer, credentials, grants } = result;
+  const { credential_configuration_ids: credentials, credential_issuer: issuer, grants } = result;
 
   ux.action.start(`get issuer metadata from ${issuer}`);
   const issuerMetadata = await getIssuerMetadata(issuer);
   const credentialMetadata = getCredentialInfo(credentials, issuerMetadata);
   ux.action.stop();
 
-  const authorizationServer = issuerMetadata.authorization_server ?? issuer;
+  const authorizationServer = issuerMetadata.authorization_servers ?? issuer;
   ux.action.start(`get openid config from ${authorizationServer}`);
   const openidConfig = await getOpenidConfiguration(authorizationServer);
   ux.action.stop();
@@ -110,7 +110,7 @@ export async function claimCredentialOffer(credentialOfferURL: string) {
   let token;
 
   if (preAuthGrant) {
-    const userPin = grants?.[GRANT_TYPES.PREAUTHORIZED_CODE]?.user_pin_required
+    const userPin = grants?.[GRANT_TYPES.PREAUTHORIZED_CODE]?.tx_code
       ? await prompt(`Credential offer is protected with use PIN. Please enter one and press enter: `)
       : undefined;
 
@@ -142,7 +142,7 @@ async function exchangePreauthCodeWithToken(endpoint: string, code: string, user
   const payload = {
     grant_type: GRANT_TYPES.PREAUTHORIZED_CODE,
     'pre-authorized_code': code,
-    user_pin: userPin,
+    tx_code: userPin,
   };
 
   const formPayload = Object.keys(payload)
@@ -211,7 +211,9 @@ export function getCredentialInfo(
   }
 
   const credentialIdentifier = credentials[0];
-  const credentialMetadata = (issuerMetadata.credentials_supported as SupportedCredentialMap)[credentialIdentifier];
+  const credentialMetadata = (issuerMetadata.credential_configurations_supported as SupportedCredentialMap)[
+    credentialIdentifier
+  ];
 
   return isVcSdJwt(credentialMetadata)
     ? {

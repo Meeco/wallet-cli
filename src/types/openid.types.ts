@@ -34,8 +34,8 @@ export type CredentialOfferDetails = string[];
 
 export type IssuerMetadata = {
   [metadata: string]: unknown;
+  credential_configurations_supported: SupportedCredential[] | SupportedCredentialMap;
   credential_endpoint: string;
-  credentials_supported: SupportedCredential[] | SupportedCredentialMap;
   issuer: string;
 };
 
